@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neural World Cup Interface</title>
+  <!-- Cyberpunk fonts from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body class="mode-tray">
+  <!-- Cyberpunk visual effects -->
+  <div class="cyber-grid"></div>
+  <div class="scanlines"></div>
+
+  <!-- Main Cyber Container -->
+  <div class="cyber-container">
+    
+    <!-- Custom Cyber Title Bar -->
+    <header class="cyber-header">
+      <div class="header-left">
+        <span class="status-indicator online"></span>
+        <span class="status-text font-mono">SYS<span class="status-detail">_STATUS</span>: ACTIVE</span>
+      </div>
+      <div class="header-center font-orbitron">
+        NEURAL CUP LINK <span class="header-version">// V2026.06.12</span>
+      </div>
+      <div class="header-right no-drag">
+        <button id="sim-btn" class="cyber-btn-accent font-mono" title="Simulate Match Progress">SIM_LIVE</button>
+        <button id="minimize-btn" class="titlebar-btn font-mono" title="Minimize">_</button>
+        <button id="detach-btn" class="titlebar-btn font-mono" title="Detach Window">DETACH</button>
+        <button id="close-btn" class="titlebar-btn close font-mono" title="Quit App">×</button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="cyber-content">
+      
+      <!-- Date Navigation Panel -->
+      <section class="date-selector">
+        <button id="prev-date-btn" class="cyber-nav-btn font-mono">&lt; PREV</button>
+        
+        <div class="date-display-container">
+          <input type="date" id="date-picker" min="2026-06-11" max="2026-07-19" value="2026-06-12">
+          <div id="friendly-date" class="font-orbitron">Friday, June 12, 2026</div>
+        </div>
+
+        <button id="next-date-btn" class="cyber-nav-btn font-mono">NEXT &gt;</button>
+      </section>
+
+      <!-- Timezone Accents -->
+      <div class="timezone-banner font-mono">
+        <span class="label">TIMEZONE:</span> <span id="user-timezone">UTC</span>
+      </div>
+
+      <!-- Scrollable Match List Viewport -->
+      <div class="match-viewport">
+        <div id="matches-container" class="matches-list">
+          <!-- Matches will be dynamically populated here -->
+          <div class="cyber-loader font-mono">ESTABLISHING DATA LINK...</div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Cyberpunk System Footer -->
+    <footer class="cyber-footer font-mono">
+      <div class="footer-left">
+        <span>NEURAL_CUP // SECURE_LINK</span>
+      </div>
+      <div class="footer-right">
+        <span>RAM: <span id="perf-ram">-- MB</span> | CPU: <span id="perf-cpu">--%</span></span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

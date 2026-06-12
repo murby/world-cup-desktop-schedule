@@ -1,51 +1,69 @@
-import { config, validateConfig } from './src/config.js';
-import { generateSchedulePayload } from './src/schedule.js';
-import { sendSlackMessage } from './src/slack.js';
+import { getMatchesData, getFlagEmoji } from './src/utils.js';
 
 async function main() {
   try {
     // Parse arguments
     const args = process.argv.slice(2);
     let targetDate = null;
-    let forceDryRun = false;
 
     for (let i = 0; i < args.length; i++) {
       if ((args[i] === '--date' || args[i] === '-d') && args[i + 1]) {
         targetDate = args[i + 1];
         i++;
-      } else if (args[i] === '--dry-run' || args[i] === '-n') {
-        forceDryRun = true;
       }
     }
 
-    // Apply CLI overrides to configuration
-    if (forceDryRun) {
-      config.app.dryRun = true;
+    const result = await getMatchesData(targetDate);
+
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to retrieve match data.');
     }
 
-    // Validate Slack configuration (only if not dry-running)
-    validateConfig();
+    const { friendlyDate, userTimezone, matches } = result;
 
-    console.log(`World Cup Schedule App initiated.`);
-    console.log(`Target Date: ${targetDate || 'Today (default)'}`);
-    console.log(`User Timezone: ${config.app.userTimezone}`);
-    console.log(`Execution Mode: ${config.app.dryRun ? 'DRY-RUN (console only)' : 'PRODUCTION (Slack)'}`);
+    console.log('\n┌────────────────────────────────────────────────────────┐');
+    console.log('│           🏆 2026 FIFA WORLD CUP SCHEDULE              │');
+    console.log('├────────────────────────────────────────────────────────┤');
+    console.log(`│  Date:     ${friendlyDate.padEnd(43)} │`);
+    console.log(`│  Timezone: ${userTimezone.padEnd(43)} │`);
+    console.log('└────────────────────────────────────────────────────────┘\n');
 
-    // Generate schedule
-    const payload = generateSchedulePayload(targetDate);
+    if (matches.length === 0) {
+      console.log('😴 No matches scheduled for this date.\n');
+      return;
+    }
 
-    // Send payload
-    const result = await sendSlackMessage(payload);
+    matches.forEach((match, idx) => {
+      const homeFlag = getFlagEmoji(match.homeTeam.iso2);
+      const awayFlag = getFlagEmoji(match.awayTeam.iso2);
+      const stageText = match.type === 'group'
+        ? `Group ${match.group} • Matchday ${match.matchday}`
+        : match.type.toUpperCase();
 
-    if (result.success) {
-      if (result.mode === 'dry-run') {
-        console.log('✅ Success: Dry-run matches printed above.');
-      } else {
-        console.log(`✅ Success: Schedule posted to Slack via ${result.mode}.`);
+      let statusText = 'SCHEDULED';
+      let scoreText = '';
+
+      if (match.finished) {
+        statusText = 'FINISHED';
+        scoreText = ` [${match.homeScore} - ${match.awayScore}]`;
+      } else if (match.timeElapsed !== 'notstarted') {
+        statusText = `LIVE (${match.timeElapsed}')`;
+        scoreText = ` [${match.homeScore} - ${match.awayScore}]`;
       }
-    }
+
+      console.log(`⚽ \x1b[35mMatch #${match.id}\x1b[0m | \x1b[36m${stageText}\x1b[0m`);
+      console.log(`   👉 ${homeFlag} \x1b[1m${match.homeTeam.name}\x1b[0m vs \x1b[1m${match.awayTeam.name}\x1b[0m ${awayFlag}${scoreText}`);
+      console.log(`   ⏰ \x1b[33m${match.kickoffUser}\x1b[0m (${match.kickoffLocal} local in ${match.stadium.city})`);
+      console.log(`   🏟️  ${match.stadium.name} (${match.stadium.city}, ${match.stadium.country})`);
+      console.log(`   ⚡ Status: \x1b[32m${statusText}\x1b[0m`);
+      
+      if (idx < matches.length - 1) {
+        console.log('\n──────────────────────────────────────────────────────────\n');
+      }
+    });
+    console.log('');
   } catch (error) {
-    console.error(`❌ Error executing schedule app: ${error.message}`);
+    console.error(`\n❌ Error executing schedule app: ${error.message}\n`);
     process.exit(1);
   }
 }
