@@ -1,0 +1,24 @@
+{
+  "name": "slack-world-cup-schedule",
+  "version": "1.0.0",
+  "description": "A daily schedule provider for the 2026 FIFA World Cup matches posted directly to Slack.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node index.js --date 2026-06-12 --dry-run",
+    "dry-run": "node index.js --dry-run"
+  },
+  "keywords": [
+    "slack",
+    "world-cup",
+    "football",
+    "schedule",
+    "cron"
+  ],
+  "author": "Richard Murby",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
