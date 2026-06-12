@@ -1,5 +1,5 @@
 {
-  "name": "world-cup-schedule",
+  "name": "world-cup-desktop-schedule",
   "version": "1.0.0",
   "description": "A daily schedule provider and Electron desktop app for the 2026 FIFA World Cup matches.",
   "main": "index.js",
